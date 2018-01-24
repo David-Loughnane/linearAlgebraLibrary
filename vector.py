@@ -17,3 +17,36 @@ class Vector(object):
 
     def __eq__(self, v):
         return self.coordinates == v.coordinates
+
+    def __add__(self, v):
+        try:
+            if not self.dimension == v.dimension:
+                raise ValueError
+
+            new_cordinates = [x + y for x, y in zip(self.coordinates, v.coordinates)]
+            return Vector(new_cordinates)
+
+        except ValueError:
+            raise ValueError('Dimesions of vectors must match')
+
+    def __sub__(self, v):
+        try:
+            if not self.dimension == v.dimension:
+                raise ValueError
+
+            new_cordinates = [x - y for x, y in zip(self.coordinates, v.coordinates)]
+            return Vector(new_cordinates)
+
+        except ValueError:
+            raise ValueError('Dimesions of vectors must match')
+
+    def __mul__(self, c):
+        try:
+            if not (type(c) == int or type(c) == float):
+                raise ValueError
+
+            new_cordinates = [c * x for x in self.coordinates]
+            return Vector(new_cordinates)
+
+        except ValueError:
+            raise('Scalar must be of type int or float')
