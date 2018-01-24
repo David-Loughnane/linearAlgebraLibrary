@@ -1,4 +1,4 @@
-from math import sqrt
+from math import sqrt, acos, degrees
 
 
 class Vector(object):
@@ -76,6 +76,16 @@ class Vector(object):
         """Return normalised (magnitude 1) version of vector."""
         return self / self.magnitude()
 
-    def dot_product(self, v):
+    def dot(self, v):
         return sum([x * y for x, y in zip(self.coordinates, v.coordinates)])
-        
+
+    def angle_with(self, v, in_degrees=False):
+        v1 = self.normalise()
+        v2 = v.normalise()
+
+        angle = acos(v1.dot_product(v2))
+
+        if in_degrees is False:
+            return angle
+        else:
+            return degrees(angle)
