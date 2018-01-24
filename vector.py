@@ -1,12 +1,18 @@
 from math import sqrt, acos, degrees
+from decimal import Decimal, getcontext
+
+getcontext().prec = 30
 
 
 class Vector(object):
+
+    CANNOT_NORMALIZE_ZERO_VECTOR_MSG = 'Cannot normalise the zero vector'
+
     def __init__(self, coordinates):
         try:
             if not coordinates:
                 raise ValueError
-            self.coordinates = tuple(coordinates)
+            self.coordinates = tuple([Decimal(x) for x in coordinates])
             self.dimension = len(coordinates)
 
         except ValueError:
@@ -49,7 +55,7 @@ class Vector(object):
             if not (type(c) == int or type(c) == float):
                 raise ValueError
 
-            new_cordinates = [x * c for x in self.coordinates]
+            new_cordinates = [x * Decimal(c) for x in self.coordinates]
             return Vector(new_cordinates)
 
         except ValueError:
@@ -61,7 +67,7 @@ class Vector(object):
             if not (type(c) == int or type(c) == float):
                 raise ValueError
 
-            new_cordinates = [x / c for x in self.coordinates]
+            new_cordinates = [x / Decimal(c) for x in self.coordinates]
             return Vector(new_cordinates)
 
         except ValueError:
@@ -80,12 +86,18 @@ class Vector(object):
         return sum([x * y for x, y in zip(self.coordinates, v.coordinates)])
 
     def angle_with(self, v, in_degrees=False):
-        v1 = self.normalise()
-        v2 = v.normalise()
+        try:
+            v1 = self.normalise()
+            v2 = v.normalise()
 
-        angle = acos(v1.dot_product(v2))
+            angle = acos(v1.dot_product(v2))
 
-        if in_degrees is False:
-            return angle
-        else:
-            return degrees(angle)
+            if in_degrees is False:
+                return angle
+            else:
+                return degrees(angle)
+        except Exception as e:
+            if str(e) == self.CANNOT_NORMALIZE_ZERO_VECTOR_MSG:
+                raise Exception('Can\'t compute an anlge with the zero vector')
+            else:
+                raise e
