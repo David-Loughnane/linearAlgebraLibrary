@@ -1,4 +1,4 @@
-import numpy as np
+from math import sqrt
 
 
 class Vector(object):
@@ -49,7 +49,7 @@ class Vector(object):
             if not (type(c) == int or type(c) == float):
                 raise ValueError
 
-            new_cordinates = [c * x for x in self.coordinates]
+            new_cordinates = [x * c for x in self.coordinates]
             return Vector(new_cordinates)
 
         except ValueError:
@@ -61,7 +61,7 @@ class Vector(object):
             if not (type(c) == int or type(c) == float):
                 raise ValueError
 
-            new_cordinates = [c / x for x in self.coordinates]
+            new_cordinates = [x / c for x in self.coordinates]
             return Vector(new_cordinates)
 
         except ValueError:
@@ -69,12 +69,13 @@ class Vector(object):
 
     def magnitude(self):
         """Return the magnitude (Euclidean distance from origin) of a vector using the Pythagorean Theorem."""
-        squared_deltas = [np.power(x, 2) for x in self.coordinates]
-        return np.sqrt(np.sum(squared_deltas))
+        squared_deltas = [x ** 2 for x in self.coordinates]
+        return sqrt(sum(squared_deltas))
 
     def normalise(self):
         """Return normalised (magnitude 1) version of vector."""
         return self / self.magnitude()
 
-
-
+    def dot_product(self, v):
+        return sum([x * y for x, y in zip(self.coordinates, v.coordinates)])
+        
