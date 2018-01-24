@@ -1,3 +1,6 @@
+import numpy as np
+
+
 class Vector(object):
     def __init__(self, coordinates):
         try:
@@ -41,6 +44,7 @@ class Vector(object):
             raise ValueError('Dimesions of vectors must match')
 
     def __mul__(self, c):
+        """Scalar multiplication."""
         try:
             if not (type(c) == int or type(c) == float):
                 raise ValueError
@@ -50,3 +54,27 @@ class Vector(object):
 
         except ValueError:
             raise('Scalar must be of type int or float')
+
+    def __truediv__(self, c):
+        """Scalar division."""
+        try:
+            if not (type(c) == int or type(c) == float):
+                raise ValueError
+
+            new_cordinates = [c / x for x in self.coordinates]
+            return Vector(new_cordinates)
+
+        except ValueError:
+            raise('Scalar must be of type int or float')
+
+    def magnitude(self):
+        """Return the magnitude (Euclidean distance from origin) of a vector using the Pythagorean Theorem."""
+        squared_deltas = [np.power(x, 2) for x in self.coordinates]
+        return np.sqrt(np.sum(squared_deltas))
+
+    def normalise(self):
+        """Return normalised (magnitude 1) version of vector."""
+        return self / self.magnitude()
+
+
+
