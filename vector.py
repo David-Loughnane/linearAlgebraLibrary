@@ -1,4 +1,4 @@
-from math import sqrt, acos, degrees
+from math import sqrt, acos, degrees, pi
 from decimal import Decimal, getcontext
 
 getcontext().prec = 30
@@ -78,19 +78,29 @@ class Vector(object):
         squared_deltas = [x ** 2 for x in self.coordinates]
         return sqrt(sum(squared_deltas))
 
+    def is_zero(self, tolerance=1e-10):
+        return self.magnitude() < tolerance
+
     def normalise(self):
         """Return normalised (magnitude 1) version of vector."""
         return self / self.magnitude()
 
-    def dot(self, v):
-        return sum([x * y for x, y in zip(self.coordinates, v.coordinates)])
+    def dot(self, v, tolerance=1e-10):
+        dot_product = sum([x * y for x, y in zip(self.coordinates, v.coordinates)])
+        if (abs(dot_product) - 1) < tolerance:
+            if dot_product > 0:
+                return 1.0
+            else:
+                return -1.0
+        else:
+            return dot_product
 
     def angle_with(self, v, in_degrees=False):
         try:
             v1 = self.normalise()
             v2 = v.normalise()
 
-            angle = acos(v1.dot_product(v2))
+            angle = acos(v1.dot(v2))
 
             if in_degrees is False:
                 return angle
@@ -101,3 +111,14 @@ class Vector(object):
                 raise Exception('Can\'t compute an anlge with the zero vector')
             else:
                 raise e
+
+    def is_parallel_to(self, v, tolerance=1e-10):
+        if self.is_zero() or v.is_zero():
+            return True
+        elif self.angle_with(v) == pi or self.angle_with(v) == 0:
+            return True
+        else:
+            return False
+
+    def is_orthogonal_to(self, v, tolerance=1e-10):
+        return abs(self.dot(v)) < tolerance
