@@ -1,4 +1,4 @@
-from math import sqrt, acos, degrees, pi
+from math import sqrt, acos, degrees, pi, sin
 from decimal import Decimal, getcontext
 
 getcontext().prec = 30
@@ -145,3 +145,24 @@ class Vector(object):
                 raise Exception(self.NO_UNIQUE_ORTHOGONAL_COMPONENT_MSG)
             else:
                 raise e
+
+    def area_triangle_with(self, v):
+        height = self.component_orthogonal_to(v).magnitude()
+        return 0.5 * v.magnitude() * height
+
+    def area_parallelogram_with(self, v):
+        height = self.component_orthogonal_to(v).magnitude()
+        return v.magnitude() * height
+
+    def cross_product_magnitude(self, v):
+        return self.magnitude() * v.magnitude() * sin(self.angle_with(v))
+
+    def cross_product(self, v):
+        x1, y1, z1 = self.coordinates
+        x2, y2, z2 = v.coordinates
+
+        x = (y1 * z2) - (y2 * z1)
+        y = -((x1 * z2) - (x2 * z1))
+        z = (x1 * y2) - (x2 * y1)
+
+        return Vector([x, y, z])
