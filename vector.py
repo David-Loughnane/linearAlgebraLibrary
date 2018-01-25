@@ -7,6 +7,8 @@ getcontext().prec = 30
 class Vector(object):
 
     CANNOT_NORMALIZE_ZERO_VECTOR_MSG = 'Cannot normalise the zero vector'
+    NO_UNIQUE_PARALLEL_COMPONENT_MSG = ''
+    NO_UNIQUE_ORTHOGONAL_COMPONENT_MSG = ''
 
     def __init__(self, coordinates):
         try:
@@ -52,7 +54,7 @@ class Vector(object):
     def __mul__(self, c):
         """Scalar multiplication."""
         try:
-            if not (type(c) == int or type(c) == float):
+            if type(c) not in (int, float, Decimal):
                 raise ValueError
 
             new_cordinates = [x * Decimal(c) for x in self.coordinates]
@@ -64,7 +66,7 @@ class Vector(object):
     def __truediv__(self, c):
         """Scalar division."""
         try:
-            if not (type(c) == int or type(c) == float):
+            if type(c) not in (int, float, Decimal):
                 raise ValueError
 
             new_cordinates = [x / Decimal(c) for x in self.coordinates]
@@ -122,3 +124,24 @@ class Vector(object):
 
     def is_orthogonal_to(self, v, tolerance=1e-10):
         return abs(self.dot(v)) < tolerance
+
+    def component_parallel_to(self, v):
+        try:
+            u = v.normalise()
+            weight = self.dot(u)
+            return u * weight
+        except Exception as e:
+            if str(e) == self.CANNOT_NORMALIZE_ZERO_VECTOR_MSG:
+                raise Exception(self.NO_UNIQUE_PARALLEL_COMPONENT_MSG)
+            else:
+                raise e
+
+    def component_orthogonal_to(self, v):
+        try:
+            projection = self.component_parallel_to(v)
+            return self - projection
+        except Exception as e:
+            if str(e) == self.NO_UNIQUE_PARALLEL_COMPONENT_MSG:
+                raise Exception(self.NO_UNIQUE_ORTHOGONAL_COMPONENT_MSG)
+            else:
+                raise e
